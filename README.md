@@ -4,7 +4,7 @@ A sample springboot application with MongoDB as backend created to demonstrate t
 
 ## MongoDB setup
 
-The following command will start a mongo database with some pre-configured values:
+The following command will start a mongo database (as a docker container) with some pre-configured values:
 
 1. **username**: root
 2. **password**: password
