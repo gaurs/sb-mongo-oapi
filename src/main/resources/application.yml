@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: SpringBootMongoDBDemo
+  # database connectivity options
+  data:
+    mongodb:
+      port: 27017
+      host: localhost
+      authentication-database: admin
+      username: root
+      password: password
+      database: employee
+
+# app port
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+
+
+# open api documentation
+application:
+  description: a sample employee management application
+  version: 0.1
