@@ -1,6 +1,6 @@
 # Springboot, MongoDB and OpenAPI
 
-A sample springboot application with MongoDB as backend created to demonstrate the usage of [OpenApi](https://swagger.io/specification/). In short a weekend well spent :)
+A sample springboot application with MongoDB as backend created to demonstrate the usage of [OpenApi](https://swagger.io/specification/).
 
 ## MongoDB setup
 
@@ -102,6 +102,23 @@ The following tasks are pending and will be available in coming weeks:
 1. Enable Streaming using webflux
 2. Integrate Spring Security
 
-## Feedback
+## Docker Integration
 
-Please drop an [email](mailto:sumit@gaurs.io) note in case you have any feedback.
+Refer to [Dockerfile](Dockerfile) for the image template. Additionally, the **pom.xml** file is already updated to include `dockerfile-maven-plugin` which  will trigger the docker image build  based on the config  parameters specified. Make sure to trigger `EXPORT DOCKER_HOST=<host>:2375` before you run the maven build to indicate docker daemon waiting for inbound connections.
+
+If you refer to [application.yml](src/main/resources/application.yml), you will find that the application is configured to discover mongodb 
+instance via a specific name matching the mongodb container we started previously:
+
+```yml
+  data:
+    mongodb:
+      port: 27017
+      host: mongodb
+```
+
+To allow container discovery, make sure to start both the containers using same network:
+
+```bash
+docke run --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=password -e MONGO_INITDB_DATABASE=employee -d --network my_subnet mongo:latest
+docker container run --rm -p 8080:8080 --network my_subnet sb-mongo-db:0.0.1-SNAPSHOT
+```
