@@ -2,7 +2,7 @@
 FROM openjdk:16-jdk-alpine3.13
 
 # metadata
-MAINTAINER "sumit@gaurs.net"
+LABEL MAINTAINER="sumit@gaurs.net"
 
 # workspace
 WORKDIR /opt/app/docker-sb-demo

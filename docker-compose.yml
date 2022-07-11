@@ -1,0 +1,34 @@
+# optional since v1.27.0
+version: '3.9'
+services:
+    api:
+        build: .
+        platform: linux/amd64
+        container_name: spring-boot
+        ports:
+            - "8080:8080"
+        restart: always
+        networks:
+            - api-network
+            - db-network
+        depends_on: 
+            - database
+    database:
+        image: mongo:4.4.15
+        container_name: mongodb
+        volumes:
+            - ./db:/data/db
+        environment:
+            - MONGO_INITDB_DATABASE=employee
+        networks:
+            - db-network
+        restart: always
+        env_file:
+            - mongo.env # inject the environment variables defined in the file "mysql.env"
+networks:
+    api-network:
+        name: apis
+        driver: bridge
+    db-network:
+        name: db
+        driver: bridge
