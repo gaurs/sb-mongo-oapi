@@ -1,5 +1,6 @@
-# optional since v1.27.0
-version: '3.9'
+# optional since v1.27.0 - 
+# removed version to include condition in depends_on
+# version: '3.9'
 services:
     api:
         build: .
@@ -7,12 +8,15 @@ services:
         container_name: spring-boot
         ports:
             - "8080:8080"
+        labels:
+            - "api.version=0.1"    
         restart: always
         networks:
             - api-network
             - db-network
-        depends_on: 
-            - database
+        depends_on:
+            database:
+                condition: service_healthy
     database:
         image: mongo:4.4.15
         container_name: mongodb
@@ -23,8 +27,15 @@ services:
         networks:
             - db-network
         restart: always
+        # inject the environment variables defined in the file "mongo.env"
         env_file:
-            - mongo.env # inject the environment variables defined in the file "mysql.env"
+            - mongo.env
+        healthcheck:
+            test: echo 'db.runCommand({serverStatus:1}).ok' | mongo admin -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet | grep 1
+            interval: 10s
+            timeout: 10s
+            retries: 5
+            start_period: 20s
 networks:
     api-network:
         name: apis
