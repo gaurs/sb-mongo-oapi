@@ -1,5 +1,5 @@
 # base image
-FROM openjdk:16-jdk-alpine3.13
+FROM openjdk:18-alpine3.15
 
 # metadata
 LABEL MAINTAINER="sumit@gaurs.net"

@@ -49,6 +49,8 @@ public class EmployeeController{
     public ResponseEntity<Employee> save(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "employee record to be added", required = true, content = @Content(schema=@Schema(implementation = Employee.class)))
             @RequestBody Employee employee){
+        logger.info("request received to save employee: [{}]", employee);
+
         try{
             Employee persisted = employeePersistenceService.save(employee);
             return ResponseEntity.status(HttpStatus.CREATED).body(persisted);

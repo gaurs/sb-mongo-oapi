@@ -1,10 +1,12 @@
 package io.gaurs.sbm.endpoints
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.gson.JsonObject
 import io.gaurs.sbm.MockBeanConfig
 import io.gaurs.sbm.model.logical.Employee
 import io.gaurs.sbm.model.logical.EmployeeAddress
 import io.gaurs.sbm.services.EmployeePersistenceService
+import org.hamcrest.CoreMatchers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus
@@ -13,6 +15,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import spock.lang.Specification
 
 @ActiveProfiles(profiles = ["TEST"])
@@ -27,11 +31,12 @@ class EmployeeControllerSpec extends Specification {
     EmployeePersistenceService employeePersistenceService
 
     def baseurl = "/employee"
+    def objectMapper = new ObjectMapper()
 
     def "test saving an employee for a valid response"() {
         given: "context is loaded"
         // return the same instance as received
-        employeePersistenceService.save(_ as Employee) >> {Employee employee -> employee}
+        employeePersistenceService.save(_ as Employee) >> { Employee employee -> employee }
         and: "a valid employee record"
         def employee = createSampleRequestPayload()
 
@@ -56,7 +61,7 @@ class EmployeeControllerSpec extends Specification {
 
     def "test error response while saving an employee"(){
         given: "context is loaded"
-        employeePersistenceService.save(_ as Employee) >> {{ new RuntimeException("oops")}}
+        employeePersistenceService.save(_ as Employee) >> {{ throw new RuntimeException("oops, exception thrown for testing")}}
         and: "a valid employee record"
         def employee = createSampleRequestPayload()
 
@@ -71,15 +76,36 @@ class EmployeeControllerSpec extends Specification {
         response.status == HttpStatus.INTERNAL_SERVER_ERROR.value()
     }
 
-    def "test fetching an employee"(){
+    def "test fetching an employee using json path"(){
         given: "context is loaded"
-        employeePersistenceService.getEmployeeById(_ as BigInteger) >> createSampleEmployee()
+        def employee = createSampleEmployee()
+        employeePersistenceService.getEmployeeById(_ as BigInteger) >> employee
 
         when: "an employee is fetched"
-        def response = mvc.perform(MockMvcRequestBuilders.get(baseurl + "/101").accept(MediaType.APPLICATION_JSON)).andReturn().response
+        def resultAction = mvc.perform(MockMvcRequestBuilders.get(baseurl + "/101").accept(MediaType.APPLICATION_JSON))
 
         then: "correct response should be returned"
-        response.status == HttpStatus.OK.value()
+        resultAction.andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("\$.firstName", CoreMatchers.is(employee.firstName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("\$.lastName", CoreMatchers.is(employee.lastName())))
+    }
+
+    def "test fetching an employee using object mapper"(){
+        given: "context is loaded"
+        def employee = createSampleEmployee()
+        employeePersistenceService.getEmployeeById(_ as BigInteger) >> employee
+
+        when: "an employee is fetched"
+        def resp = mvc.perform(MockMvcRequestBuilders.get(baseurl + "/101").accept(MediaType.APPLICATION_JSON)).andReturn().response
+
+        then: "correct response code should be returned"
+        resp.status == HttpStatus.OK.value()
+        and: "values are correctly mapped"
+        def jsonNode = objectMapper.readTree(resp.getContentAsString())
+        jsonNode.get("firstName").asText() == employee.firstName()
+        jsonNode.get("lastName").asText() == employee.lastName()
+        jsonNode.get("address").get("houseNumber").asLong() == employee.address().houseNumber()
     }
 
     def "test error response while fetching an employee"(){
@@ -120,6 +146,13 @@ class EmployeeControllerSpec extends Specification {
     }
 
     private static Employee createSampleEmployee(){
-        return new Employee(BigInteger.valueOf(101), "fname", "lnmame", new EmployeeAddress(101, "some-street", "some-city", "some-code"))
+        return new Employee(BigInteger.valueOf(101),
+                "fname",
+                "lnmame",
+                new EmployeeAddress(101,
+                        "some-street",
+                        "some-city",
+                        "some-code")
+        )
     }
 }

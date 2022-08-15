@@ -1,11 +1,11 @@
 package io.gaurs.sbm.model.physical;
 
 import io.gaurs.sbm.model.logical.EmployeeAddress;
-import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.annotation.PersistenceCreator;
 
 public record EmployeeAddressPhysical(int houseNumber, String street, String city, String pinCode){
 
-    @PersistenceConstructor
+    @PersistenceCreator
     public EmployeeAddressPhysical(int houseNumber, String street, String city, String pinCode){
         this.houseNumber = houseNumber;
         this.street = street;

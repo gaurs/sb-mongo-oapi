@@ -36,6 +36,8 @@ services:
             timeout: 10s
             retries: 5
             start_period: 20s
+
+# by default, networks are named as <compose-dir>-<network name>
 networks:
     api-network:
         name: apis

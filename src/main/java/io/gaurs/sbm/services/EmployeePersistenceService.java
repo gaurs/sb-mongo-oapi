@@ -38,9 +38,10 @@ public class EmployeePersistenceService{
      */
     public Employee getEmployeeById(@NonNull BigInteger id){
         logger.info("request received to fetch employee with id: [{}]", id);
-        Optional<EmployeePhysical> employee = employeeRepository.findById(id);
-        if(employee.isPresent()){
-            return employee.get().toModel();
+        var optionalEmployee = employeeRepository.findById(id);
+
+        if(optionalEmployee.isPresent()){
+            return optionalEmployee.get().toModel();
         } else{
             logger.info("no record found for id: [{}]", id);
             return null;
@@ -56,7 +57,8 @@ public class EmployeePersistenceService{
      */
     public Employee save(Employee employee){
         logger.info("request received to save employee: [{}]", employee);
-        EmployeePhysical employeePhysical = new EmployeePhysical(employee);
+
+        var employeePhysical = new EmployeePhysical(employee);
         return employeeRepository.save(employeePhysical).toModel();
     }
 }

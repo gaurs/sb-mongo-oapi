@@ -2,7 +2,7 @@ package io.gaurs.sbm.model.physical;
 
 import io.gaurs.sbm.model.logical.Employee;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigInteger;
@@ -17,7 +17,7 @@ public class EmployeePhysical{
     private EmployeeAddressPhysical address;
 
 
-    @PersistenceConstructor
+    @PersistenceCreator
     public EmployeePhysical(BigInteger id, String firstName, String lastName, EmployeeAddressPhysical address){
         this.id = id;
         this.firstName = firstName;
