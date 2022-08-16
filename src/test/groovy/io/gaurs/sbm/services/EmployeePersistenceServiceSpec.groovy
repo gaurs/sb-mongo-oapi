@@ -53,7 +53,6 @@ class EmployeePersistenceServiceSpec extends Specification {
         def saved = employeePersistenceService.getEmployeeById(BigInteger.valueOf(101))
 
         then: "correct record should be returned"
-
         saved == null
     }
 

@@ -21,7 +21,6 @@
         <groovy.all>4.0.4</groovy.all>
         <bytebuddy.version>1.12.12</bytebuddy.version>
         <objenesis.version>3.2</objenesis.version>
-        <junit.version>4.13.2</junit.version>
         <spock.reports>2.3.0-groovy-3.0</spock.reports>
 
         <gmavenplus.plugin>1.13.1</gmavenplus.plugin>
@@ -125,14 +124,6 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <!-- for test cases/suits -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- spock framework to support gherkin pattern of testing -->

@@ -9,7 +9,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.util.Optional;
 
 /**
  * A service class to perform basic CRUD operations on an
