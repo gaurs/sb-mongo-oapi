@@ -19,6 +19,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import spock.lang.Specification
 
+/**
+ * <code>@WebMvcTest</code> only loads the view layer
+ *
+ * @author gaurs
+ */
 @ActiveProfiles(profiles = ["TEST"])
 @WebMvcTest(controllers = [EmployeeController])
 @ContextConfiguration(classes = MockBeanConfig.class)
@@ -49,7 +54,7 @@ class EmployeeControllerSpec extends Specification {
 
         then: "created response should be returned"
         // the argument should match with the parameter
-        1* employeePersistenceService.save(_) >> {
+        1 * employeePersistenceService.save(_) >> {
             def argument = it[0]
             assert argument instanceof Employee
             assert argument.firstName() == "fName"
@@ -59,9 +64,9 @@ class EmployeeControllerSpec extends Specification {
         response.status == HttpStatus.CREATED.value()
     }
 
-    def "test error response while saving an employee"(){
+    def "test error response while saving an employee"() {
         given: "context is loaded"
-        employeePersistenceService.save(_ as Employee) >> {{ throw new RuntimeException("oops, exception thrown for testing")}}
+        employeePersistenceService.save(_ as Employee) >> { { throw new RuntimeException("oops, exception thrown for testing") } }
         and: "a valid employee record"
         def employee = createSampleRequestPayload()
 
@@ -76,7 +81,7 @@ class EmployeeControllerSpec extends Specification {
         response.status == HttpStatus.INTERNAL_SERVER_ERROR.value()
     }
 
-    def "test fetching an employee using json path"(){
+    def "test fetching an employee using json path"() {
         given: "context is loaded"
         def employee = createSampleEmployee()
         employeePersistenceService.getEmployeeById(_ as BigInteger) >> employee
@@ -91,7 +96,7 @@ class EmployeeControllerSpec extends Specification {
                 .andExpect(MockMvcResultMatchers.jsonPath("\$.lastName", CoreMatchers.is(employee.lastName())))
     }
 
-    def "test fetching an employee using object mapper"(){
+    def "test fetching an employee using object mapper"() {
         given: "context is loaded"
         def employee = createSampleEmployee()
         employeePersistenceService.getEmployeeById(_ as BigInteger) >> employee
@@ -108,9 +113,9 @@ class EmployeeControllerSpec extends Specification {
         jsonNode.get("address").get("houseNumber").asLong() == employee.address().houseNumber()
     }
 
-    def "test error response while fetching an employee"(){
+    def "test error response while fetching an employee"() {
         given: "context is loaded"
-        employeePersistenceService.getEmployeeById(_ as BigInteger) >> {{ new RuntimeException("oops")}}
+        employeePersistenceService.getEmployeeById(_ as BigInteger) >> { { new RuntimeException("oops") } }
 
         when: "an employee is fetched"
         def response = mvc.perform(MockMvcRequestBuilders.get(baseurl + "/101").accept(MediaType.APPLICATION_JSON)).andReturn().response
@@ -119,7 +124,7 @@ class EmployeeControllerSpec extends Specification {
         response.status == HttpStatus.INTERNAL_SERVER_ERROR.value()
     }
 
-    def "test error response while fetching an employee due to bad request"(){
+    def "test error response while fetching an employee due to bad request"() {
         given: "context is loaded"
         employeePersistenceService.getEmployeeById(_ as BigInteger) >> null
 
@@ -145,7 +150,7 @@ class EmployeeControllerSpec extends Specification {
         return employee.toString()
     }
 
-    private static Employee createSampleEmployee(){
+    private static Employee createSampleEmployee() {
         return new Employee(BigInteger.valueOf(101),
                 "fname",
                 "lnmame",

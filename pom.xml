@@ -23,6 +23,8 @@
         <objenesis.version>3.2</objenesis.version>
         <spock.reports>2.3.0-groovy-3.0</spock.reports>
 
+        <test.containers>1.17.3</test.containers>
+
         <gmavenplus.plugin>1.13.1</gmavenplus.plugin>
         <maven.surefire>3.0.0-M5</maven.surefire>
         <jacoco.version>0.8.8</jacoco.version>
@@ -109,6 +111,26 @@
             <groupId>org.objenesis</groupId>
             <artifactId>objenesis</artifactId>
             <version>${objenesis.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- in memory mongodb for repo tests -->
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- integration tests -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>spock</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mongodb</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -248,6 +270,19 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${test.containers}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 
     <developers>
         <developer>
