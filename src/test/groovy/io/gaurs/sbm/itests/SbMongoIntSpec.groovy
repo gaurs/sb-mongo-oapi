@@ -27,6 +27,8 @@ import spock.lang.Specification
  * <code>@AutoConfigureMockMvc</code>: auto configure a dummy mvc instance
  * <code>@TestPropertySource</code> disable the in-memory database
  *
+ * must read: https://stackoverflow.com/a/53346178
+ *
  * @author gaurs
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -60,7 +62,7 @@ class SbMongoIntSpec extends Specification {
 
     // run before every feature method
     def setup(){
-        employeeRepository.deleteAll();
+        employeeRepository.deleteAll()
     }
 
     def "test saving an employee for a valid response"() {
